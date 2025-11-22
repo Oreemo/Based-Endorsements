@@ -1,3 +1,5 @@
+![Based Endorsements Banner](base-endorsements-banner.png)
+
 # Based Endorsements
 
 A Farcaster Frame application built on Base blockchain that allows users to endorse builders with on-chain attestations via EAS (Ethereum Attestation Service).
