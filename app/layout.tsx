@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export async function generateMetadata(): Promise<Metadata> {
-    const frameMetadata = {
+    return {
         title: "Based Endorsements",
         description: "Endorse builders on Base with on-chain attestations",
         openGraph: {
@@ -10,5 +10,16 @@ export async function generateMetadata(): Promise<Metadata> {
             description: "Endorse builders on Base with on-chain attestations",
         },
     };
+}
 
+export default function RootLayout({
+    children,
+}: Readonly<{
+    children: React.ReactNode;
+}>) {
+    return (
+        <html lang="en">
+            <body>{children}</body>
+        </html>
+    );
 }
