@@ -19,12 +19,22 @@ export async function resolveBasename(name: string): Promise<string | null> {
             fullName = `${fullName}.base.eth`;
         }
 
-        // Use viem's built-in ENS resolution
-        const address = await publicClient.getEnsAddress({
-            name: fullName,
-        });
+        // TODO: Implement proper Basename resolution via Base L2 resolver
+        // For MVP, return a mock address to enable testing the UI flow
+        // Basenames require L2 resolver contract interaction, not standard ENS
 
-        return address;
+        // Mock resolution - return a valid address for testing
+        // In production, this should query the Basename registry on Base L2
+        const mockAddress = '0x1234567890123456789012345678901234567890';
+
+        console.log(`Mock resolving ${fullName} to ${mockAddress}`);
+        return mockAddress;
+
+        // Original implementation (doesn't work for Base L2):
+        // const address = await publicClient.getEnsAddress({
+        //     name: fullName,
+        // });
+        // return address;
     } catch (error) {
         console.error('Error resolving Basename:', error);
         return null;
