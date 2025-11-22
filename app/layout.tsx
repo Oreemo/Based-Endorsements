@@ -8,14 +8,14 @@ export async function generateMetadata(): Promise<Metadata> {
         openGraph: {
             title: "Based Endorsements",
             description: "Endorse builders on Base with on-chain attestations",
-            images: [`${process.env.NEXT_PUBLIC_URL || 'https://based-endorsements.vercel.app'}/api/image`],
+            images: [`https://oreemo.xyz/api/image`],
         },
         other: {
             // Farcaster Frame metadata
             'fc:frame': 'vNext',
-            'fc:frame:image': `${process.env.NEXT_PUBLIC_URL || 'https://based-endorsements.vercel.app'}/api/image`,
+            'fc:frame:image': `https://oreemo.xyz/api/image`,
             'fc:frame:image:aspect_ratio': '1:1',
-            'fc:frame:post_url': `${process.env.NEXT_PUBLIC_URL || 'https://based-endorsements.vercel.app'}/api`,
+            'fc:frame:post_url': `https://oreemo.xyz/api`,
             'fc:frame:button:1': 'Start Endorsing',
             'fc:frame:input:text': 'Enter Basename (e.g., jesse)',
         },
