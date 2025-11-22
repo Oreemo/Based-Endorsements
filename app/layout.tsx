@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import FrameMetadata from "./components/FrameMetadata";
 
 export async function generateMetadata(): Promise<Metadata> {
     const frameMetadata = {
@@ -8,14 +9,6 @@ export async function generateMetadata(): Promise<Metadata> {
         openGraph: {
             title: "Based Endorsements",
             description: "Endorse builders on Base with on-chain attestations",
-        },
-        other: {
-            // Farcaster Frame metadata
-            'fc:frame': 'vNext',
-            'fc:frame:image': `https://oreemo.xyz/api/image?path=/`,
-            'fc:frame:image:aspect_ratio': '1:1',
-            'fc:frame:post_url': `https://oreemo.xyz/api/`,
-            'fc:frame:button:1': 'Start',
         },
     };
 
@@ -31,6 +24,9 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en">
+            <head>
+                <FrameMetadata />
+            </head>
             <body>
                 <FarcasterProvider>{children}</FarcasterProvider>
             </body>
