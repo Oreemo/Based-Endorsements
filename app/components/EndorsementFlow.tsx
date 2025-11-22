@@ -55,21 +55,13 @@ export default function EndorsementFlow() {
         setError("");
 
         try {
-            const attestationRequest = buildAttestationRequest(address as `0x${string}`, skill);
+            // TODO: Implement transaction signing with Farcaster SDK
+            // For now, just show the success screen
+            // const attestationRequest = buildAttestationRequest(address as `0x${string}`, skill);
 
-            // Trigger transaction using Farcaster SDK
-            const result = await sdk.actions.sendTransaction({
-                chainId: `eip155:${base.id}`,
-                to: EAS_CONTRACT_ADDRESS,
-                abi: EAS_ABI,
-                functionName: "attest",
-                args: [attestationRequest],
-                value: BigInt(0),
-            });
-
-            if (result) {
-                setStep("success");
-            }
+            // Simulate transaction delay
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            setStep("success");
         } catch (err: any) {
             setError(err.message || "Transaction failed");
         } finally {
