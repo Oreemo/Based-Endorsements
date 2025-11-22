@@ -51,6 +51,57 @@ export default function EndorsementFlow() {
     };
 
     const handleConfirm = async () => {
+        console.log('[DEBUG] handleConfirm called', { address, skill });
+        if (!address || !skill) {
+            console.log('[DEBUG] Missing address or skill');
+            return;
+        }
+
+        setLoading(true);
+        setError("");
+
+        try {
+            console.log('[DEBUG] Getting Ethereum provider...');
+            const provider = await sdk.wallet.getEthereumProvider();
+            console.log('[DEBUG] Provider obtained');
+
+            console.log('[DEBUG] Building attestation...');
+            const attestationRequest = buildAttestationRequest(
+                address as `0x${string}`,
+                skill
+            );
+
+            console.log('[DEBUG] Encoding function data...');
+            const data = encodeFunctionData({
+                abi: EAS_ABI,
+                functionName: 'attest',
+                args: [attestationRequest]
+            });
+
+            console.log('[DEBUG] Sending transaction...');
+            const hash = await provider.request({
+                method: 'eth_sendTransaction',
+                params: [{
+                    to: EAS_CONTRACT_ADDRESS,
+                    data,
+                    value: '0x0',
+                    chainId: `0x${base.id.toString(16)}`
+                }]
+            }) as string;
+
+            console.log('[DEBUG] Transaction hash:', hash);
+            setTxHash(hash);
+            setStep("success");
+        } catch (err: any) {
+            console.error('[DEBUG] Transaction error:', err);
+            console.error('[DEBUG] Error details:', {
+                message: err.message,
+                code: err.code
+            });
+            setError(`Transaction failed: ${err.message || err.toString()}`);
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
