@@ -14,7 +14,7 @@ export async function generateMetadata(): Promise<Metadata> {
             'fc:frame': 'vNext',
             'fc:frame:image': `https://oreemo.xyz/api/image?path=/`,
             'fc:frame:image:aspect_ratio': '1:1',
-            'fc:frame:post_url': `https://oreemo.xyz/api`,
+            'fc:frame:post_url': `https://oreemo.xyz/api/`,
             'fc:frame:button:1': 'Start',
         },
     };
