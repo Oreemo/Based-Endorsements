@@ -8,16 +8,14 @@ export async function generateMetadata(): Promise<Metadata> {
         openGraph: {
             title: "Based Endorsements",
             description: "Endorse builders on Base with on-chain attestations",
-            images: [`https://oreemo.xyz/api/image`],
         },
         other: {
             // Farcaster Frame metadata
             'fc:frame': 'vNext',
-            'fc:frame:image': `https://oreemo.xyz/api/image`,
+            'fc:frame:image': `https://oreemo.xyz/api/image?path=/`,
             'fc:frame:image:aspect_ratio': '1:1',
             'fc:frame:post_url': `https://oreemo.xyz/api`,
-            'fc:frame:button:1': 'Start Endorsing',
-            'fc:frame:input:text': 'Enter Basename (e.g., jesse)',
+            'fc:frame:button:1': 'Start',
         },
     };
 
