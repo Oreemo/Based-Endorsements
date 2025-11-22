@@ -24,6 +24,8 @@ export async function generateMetadata(): Promise<Metadata> {
     return frameMetadata;
 }
 
+import FarcasterProvider from "./components/FarcasterProvider";
+
 export default function RootLayout({
     children,
 }: Readonly<{
@@ -31,7 +33,9 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en">
-            <body>{children}</body>
+            <body>
+                <FarcasterProvider>{children}</FarcasterProvider>
+            </body>
         </html>
     );
 }
