@@ -63,6 +63,11 @@ export default function EndorsementFlow() {
         try {
             console.log('[DEBUG] Getting Ethereum provider...');
             const provider = await sdk.wallet.getEthereumProvider();
+
+            if (!provider) {
+                throw new Error('Ethereum provider not available');
+            }
+
             console.log('[DEBUG] Provider obtained');
 
             console.log('[DEBUG] Building attestation...');
