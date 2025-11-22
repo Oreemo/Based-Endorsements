@@ -91,7 +91,7 @@ export default function EndorsementFlow() {
                                     setError("");
                                 }}
                                 placeholder="e.g., jesse or jesse.base.eth"
-                                className="w-full px-4 py-3 rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-white/50"
+                                className="w-full px-4 py-3 rounded-lg text-lg text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-white/50"
                             />
                             {error && (
                                 <p className="text-red-200 text-sm">{error}</p>
