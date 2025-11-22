@@ -94,6 +94,7 @@ export default function EndorsementFlow() {
                     to: EAS_CONTRACT_ADDRESS,
                     data,
                     value: '0x0',
+                    gas: '0x7A120', // 500,000 gas - explicit limit to avoid estimation failures
                     chainId: `0x${base.id.toString(16)}`
                 }]
             }) as string;
