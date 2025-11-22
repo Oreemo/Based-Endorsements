@@ -5,7 +5,7 @@ import { handle } from 'frog/next';
 import { base } from 'viem/chains';
 import { resolveBasename } from '@/lib/basename';
 import { buildAttestationRequest, EAS_ABI, EAS_CONTRACT_ADDRESS } from '@/lib/eas';
-import { SKILL_OPTIONS, ENDORSEMENT_AMOUNT } from '@/lib/constants';
+import { SKILL_OPTIONS } from '@/lib/constants';
 
 const app = new Frog({
     assetsPath: '/',
@@ -235,13 +235,13 @@ app.frame('/confirm', async (c) => {
                     Skill: {skillLabel}
                 </div>
                 <div style={{ color: 'rgba(255, 255, 255, 0.8)', fontSize: 24 }}>
-                    Tip: 0.001 ETH + On-chain Attestation
+                    On-chain Attestation via EAS
                 </div>
             </div>
         ),
         intents: [
             <Button.Transaction target={`/endorse?basename=${encodeURIComponent(basename)}&skill=${skill}&address=${resolvedAddress}`}>
-                Endorse (0.001 ETH)
+                Endorse Builder
             </Button.Transaction>,
             <Button action="/">Cancel</Button>,
         ],
@@ -267,7 +267,7 @@ app.transaction('/endorse', async (c) => {
         functionName: 'attest',
         args: [attestationRequest],
         to: EAS_CONTRACT_ADDRESS,
-        value: ENDORSEMENT_AMOUNT, // Send 0.001 ETH with the transaction
+        value: BigInt(0), // Free endorsement (no ETH transfer)
     });
 });
 
