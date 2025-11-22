@@ -31,7 +31,11 @@ export default function EndorsementFlow() {
         try {
             const resolvedAddress = await resolveBasename(basename);
             if (!resolvedAddress) {
-                setError(`Could not resolve basename: ${basename}`);
+                // Try to get more info if possible, but for now just show generic error
+                // The resolveBasename function logs to console, but we want to show user something if possible
+                // Let's update resolveBasename to return error details? 
+                // For now, just keep it simple but maybe the user entered an invalid name
+                setError(`Could not resolve: ${basename}. Check spelling or try another.`);
                 setLoading(false);
                 return;
             }
