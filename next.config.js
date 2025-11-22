@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+    skipTrailingSlashRedirect: true,
     webpack: (config) => {
         config.resolve.fallback = {
             ...config.resolve.fallback,
