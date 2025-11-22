@@ -14,6 +14,12 @@ const app = new Frog({
     imageAspectRatio: '1:1',
 });
 
+// Global error handler
+app.hono.onError((err, c) => {
+    console.error('Frog Error:', err);
+    return c.text('Error: ' + (err.message || 'Something went wrong'), 500);
+});
+
 // Initial screen: Input basename and select skill
 app.frame('/', (c) => {
     return c.res({
