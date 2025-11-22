@@ -20,6 +20,7 @@ export async function resolveBasename(name: string): Promise<string | null> {
         }
 
         console.log(`[Basename] Resolving: ${fullName}`);
+        console.log(`[Basename] Using RPC:`, process.env.NEXT_PUBLIC_BASE_RPC_URL || 'https://mainnet.base.org');
 
         // Use viem's built-in ENS resolution
         // This works for Basenames because they use ENSIP-10 with CCIP gateway
@@ -29,8 +30,12 @@ export async function resolveBasename(name: string): Promise<string | null> {
 
         console.log(`[Basename] Resolved ${fullName} to:`, address);
         return address;
-    } catch (error) {
+    } catch (error: any) {
         console.error('[Basename] Error resolving:', error);
+        console.error('[Basename] Error type:', error?.constructor?.name);
+        console.error('[Basename] Error message:', error?.message);
+        console.error('[Basename] Error code:', error?.code);
+        console.error('[Basename] Error details:', JSON.stringify(error, null, 2));
         return null;
     }
 }
