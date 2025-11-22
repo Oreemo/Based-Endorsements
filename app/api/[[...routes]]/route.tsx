@@ -9,6 +9,7 @@ import { SKILL_OPTIONS } from '@/lib/constants';
 
 const app = new Frog({
     assetsPath: '/',
+    basePath: '/api',
     title: 'Based Endorsements',
     imageAspectRatio: '1:1',
 });
