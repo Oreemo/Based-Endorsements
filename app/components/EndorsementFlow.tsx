@@ -6,6 +6,7 @@ import { buildAttestationRequest, EAS_ABI, EAS_CONTRACT_ADDRESS } from "@/lib/ea
 import { SKILL_OPTIONS, type SkillType } from "@/lib/constants";
 import sdk from "@farcaster/frame-sdk";
 import { base } from "viem/chains";
+import { encodeFunctionData } from "viem";
 
 type Step = "input" | "select-skill" | "confirm" | "transaction" | "success";
 
@@ -16,6 +17,7 @@ export default function EndorsementFlow() {
     const [skill, setSkill] = useState<SkillType | "">("");
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
+    const [txHash, setTxHash] = useState<string>("");
 
     const handleBasenameSubmit = async () => {
         if (!basename.trim()) {
@@ -49,24 +51,6 @@ export default function EndorsementFlow() {
     };
 
     const handleConfirm = async () => {
-        if (!address || !skill) return;
-
-        setLoading(true);
-        setError("");
-
-        try {
-            // TODO: Implement transaction signing with Farcaster SDK
-            // For now, just show the success screen
-            // const attestationRequest = buildAttestationRequest(address as `0x${string}`, skill);
-
-            // Simulate transaction delay
-            await new Promise(resolve => setTimeout(resolve, 1500));
-            setStep("success");
-        } catch (err: any) {
-            setError(err.message || "Transaction failed");
-        } finally {
-            setLoading(false);
-        }
     };
 
     return (
@@ -203,19 +187,22 @@ export default function EndorsementFlow() {
                                     setAddress("");
                                     setSkill("");
                                     setError("");
+                                    setTxHash("");
                                 }}
                                 className="w-full bg-white text-blue-600 py-4 rounded-lg font-bold text-xl hover:bg-white/90 transition"
                             >
                                 Endorse Another Builder
                             </button>
-                            <a
-                                href="https://base.easscan.org"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="block w-full bg-white/10 text-white py-3 rounded-lg font-semibold text-lg hover:bg-white/20 transition"
-                            >
-                                View on EASScan →
-                            </a>
+                            {txHash && (
+                                <a
+                                    href={`https://base.easscan.org/tx/${txHash}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="block w-full bg-white/10 text-white py-3 rounded-lg font-semibold text-lg hover:bg-white/20 transition"
+                                >
+                                    View on EASScan →
+                                </a>
+                            )}
                         </div>
                     </div>
                 )}
