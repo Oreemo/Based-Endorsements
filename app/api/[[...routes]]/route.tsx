@@ -15,8 +15,14 @@ const app = new Frog({
 });
 
 // Global error handler
+// Global error handler
 app.hono.onError((err, c) => {
-    console.error('Frog Error:', err);
+    console.error('Frog Error Details:', {
+        message: err.message,
+        stack: err.stack,
+        cause: err.cause,
+        name: err.name
+    });
     return c.text('Error: ' + (err.message || 'Something went wrong'), 500);
 });
 
