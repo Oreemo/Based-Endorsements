@@ -23,7 +23,8 @@ export async function resolveBasename(name: string): Promise<string | null> {
         console.log(`[Basename] Resolving with OnchainKit: ${fullName}`);
 
         // Use OnchainKit's getName function which returns address info
-        const result = await getName({ name: fullName, chain: base });
+        // We pass chain as any to avoid strict viem version mismatch issues
+        const result = await getName({ name: fullName, chain: base as any });
 
         console.log(`[Basename] OnchainKit result:`, result);
 
