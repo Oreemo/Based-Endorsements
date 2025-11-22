@@ -1,5 +1,6 @@
 import { createPublicClient, http } from 'viem';
 import { base } from 'viem/chains';
+import { getName } from '@coinbase/onchainkit/identity';
 
 const publicClient = createPublicClient({
     chain: base,
@@ -7,7 +8,7 @@ const publicClient = createPublicClient({
 });
 
 /**
- * Resolves a Basename to its Ethereum address
+ * Resolves a Basename to its Ethereum address using OnchainKit
  * @param name - The basename (e.g., "jesse" or "jesse.base.eth")
  * @returns The resolved 0x address or null if not found
  */
@@ -19,22 +20,24 @@ export async function resolveBasename(name: string): Promise<string | null> {
             fullName = `${fullName}.base.eth`;
         }
 
-        console.log(`[Basename] Resolving: ${fullName}`);
-        console.log(`[Basename] Using RPC:`, process.env.NEXT_PUBLIC_BASE_RPC_URL || 'https://mainnet.base.org');
+        console.log(`[Basename] Resolving with OnchainKit: ${fullName}`);
 
-        // Use viem's built-in ENS resolution
-        // This works for Basenames because they use ENSIP-10 with CCIP gateway
-        const address = await publicClient.getEnsAddress({
-            name: fullName,
-        });
+        // Use OnchainKit's getName function which returns address info
+        const result = await getName({ name: fullName, chain: base });
 
-        console.log(`[Basename] Resolved ${fullName} to:`, address);
-        return address;
+        console.log(`[Basename] OnchainKit result:`, result);
+
+        if (result && result.address) {
+            console.log(`[Basename] Resolved ${fullName} to:`, result.address);
+            return result.address;
+        }
+
+        console.log(`[Basename] No address found for ${fullName}`);
+        return null;
     } catch (error: any) {
         console.error('[Basename] Error resolving:', error);
         console.error('[Basename] Error type:', error?.constructor?.name);
         console.error('[Basename] Error message:', error?.message);
-        console.error('[Basename] Error code:', error?.code);
         console.error('[Basename] Error details:', JSON.stringify(error, null, 2));
         return null;
     }
