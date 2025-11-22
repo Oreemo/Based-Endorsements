@@ -1,6 +1,6 @@
 import { createPublicClient, http } from 'viem';
 import { base } from 'viem/chains';
-import { getName } from '@coinbase/onchainkit/identity';
+import { getAddress } from '@coinbase/onchainkit/identity';
 
 const publicClient = createPublicClient({
     chain: base,
@@ -22,9 +22,9 @@ export async function resolveBasename(name: string): Promise<string | null> {
 
         console.log(`[Basename] Resolving with OnchainKit: ${fullName}`);
 
-        // Use OnchainKit's getName function which returns address info
+        // Use OnchainKit's getAddress function which returns address info
         // We pass chain as any to avoid strict viem version mismatch issues
-        const result = await getName({ name: fullName, chain: base as any });
+        const result = await getAddress({ name: fullName, chain: base as any });
 
         console.log(`[Basename] OnchainKit result:`, result);
 
