@@ -11,17 +11,4 @@ export async function generateMetadata(): Promise<Metadata> {
         },
     };
 
-    return frameMetadata;
-}
-
-export default function RootLayout({
-    children,
-}: Readonly<{
-    children: React.ReactNode;
-}>) {
-    return (
-        <html lang="en">
-            <body>{children}</body>
-        </html>
-    );
 }
