@@ -1,18 +1,18 @@
 # Based Endorsements
 
-A Farcaster Frame application built on Base blockchain that allows users to endorse builders with ETH tips and on-chain attestations via EAS (Ethereum Attestation Service).
+A Farcaster Frame application built on Base blockchain that allows users to endorse builders with on-chain attestations via EAS (Ethereum Attestation Service).
 
 ## Features
 
 - 🎯 **Basename Resolution**: Automatically resolves Basenames (e.g., `jesse.base.eth`) to Ethereum addresses
 - ⛓️ **On-chain Attestations**: Creates permanent endorsement records using EAS on Base
-- 💰 **ETH Tips**: Send 0.001 ETH to endorsed builders
 - 🎨 **Beautiful UI**: Gradient-based Frame design with intuitive multi-step flow
 - 🚀 **Skills**: Endorse builders as Shippers, Designers, or Big Brains
+- 💎 **Free to Use**: No transaction fees for creating endorsements
 
 ## Tech Stack
 
-- **Framework**: Next.js 15 with App Router
+- **Framework**: Next.js 14 with App Router
 - **Frame**: Frog.fm for Farcaster Frame functionality
 - **Blockchain**: Base Mainnet
 - **Libraries**: 
@@ -25,8 +25,7 @@ A Farcaster Frame application built on Base blockchain that allows users to endo
 ### Prerequisites
 
 - Node.js 18+ and npm
-- An Ethereum wallet
-- ETH on Base (for transactions)
+- An Ethereum wallet (for signing transactions)
 
 ### Installation
 
@@ -59,13 +58,13 @@ For enhanced performance, you can add:
 1. **Input Screen**: User enters a Basename (e.g., "jesse")
 2. **Skill Selection**: Choose the skill to endorse (Shipper/Designer/Big Brain)
 3. **Confirmation**: View resolved address and confirm endorsement
-4. **Transaction**: Send 0.001 ETH + create EAS attestation
+4. **Transaction**: Create EAS attestation on-chain
 5. **Success**: View confirmation with link to EASScan
 
 ### On-chain Components
 
 **EAS Contract**: `0x4200000000000000000000000000000000000021` (Base)  
-**Schema UID**: `0x3b5463335a023f89382e6264f896738b333052803146193990964d61c2180c2d`  
+**Schema UID**: `0xa1380ad137f38b38f91036b612e299ad6b8ebcc86713ff21e9083e1a82add984`  
 **Schema**: `string skill, string comment`
 
 ## Testing the Frame
@@ -85,7 +84,7 @@ vercel --prod
 
 ### Other Platforms
 
-The app can be deployed to any Node.js hosting platform that supports Next.js 15.
+The app can be deployed to any Node.js hosting platform that supports Next.js 14.
 
 ## Project Structure
 
@@ -118,7 +117,6 @@ based-endorsements/
 
 - **Skills**: Edit `SKILL_OPTIONS` in `lib/constants.ts`
 - **Schema**: Update `ENDORSEMENT_SCHEMA_UID` for custom schemas
-- **Amount**: Modify `ENDORSEMENT_AMOUNT` for different tip amounts
 - **Design**: Update gradient colors and styles in `route.tsx`
 
 ## Contributing
