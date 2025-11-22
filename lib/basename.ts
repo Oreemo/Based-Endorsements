@@ -19,24 +19,6 @@ export async function resolveBasename(name: string): Promise<string | null> {
         if (!fullName.endsWith('.base.eth')) {
             fullName = `${fullName}.base.eth`;
         }
-
-        console.log(`[Basename] Resolving with OnchainKit: ${fullName}`);
-
-        // Use OnchainKit's getAddress function which returns address info
-        // We pass chain as any to avoid strict viem version mismatch issues
-        const result = await getAddress({ name: fullName, chain: base as any });
-
-        console.log(`[Basename] OnchainKit result:`, result);
-
-        if (result && result.address) {
-            console.log(`[Basename] Resolved ${fullName} to:`, result.address);
-            return result.address;
-        }
-
-        console.log(`[Basename] No address found for ${fullName}`);
-        return null;
-    } catch (error: any) {
-        console.error('[Basename] Error resolving:', error);
         console.error('[Basename] Error type:', error?.constructor?.name);
         console.error('[Basename] Error message:', error?.message);
         console.error('[Basename] Error details:', JSON.stringify(error, null, 2));
