@@ -20,7 +20,7 @@ export default function EndorsementFlow() {
     const [loading, setLoading] = useState(false);
     const [txHash, setTxHash] = useState<string>("");
     const [attestationUID, setAttestationUID] = useState<string>("");
-    const [endorsementCount, setEndorsementCount] = useState<number | null>(null);
+    const [endorsementCount, setEndorsementCount] = useState<{ total: number; bySkill: Record<string, number> } | null>(null);
 
     // Wagmi Hooks
     const { isConnected } = useAccount();
@@ -76,7 +76,7 @@ export default function EndorsementFlow() {
             }
 
             const data = await response.json();
-            setEndorsementCount(data.count || 0);
+            setEndorsementCount(data);
         } catch (err) {
             console.error("Error fetching endorsement count:", err);
             setEndorsementCount(null);
@@ -211,10 +211,21 @@ export default function EndorsementFlow() {
                         <h2 className="text-3xl font-bold text-white mb-2">
                             Endorsing: {basename}
                         </h2>
-                        {endorsementCount !== null && (
-                            <p className="text-white/80 text-sm">
-                                This builder has {endorsementCount} endorsement{endorsementCount !== 1 ? 's' : ''}
-                            </p>
+                        {endorsementCount !== null && endorsementCount.total > 0 && (
+                            <div className="bg-white/10 rounded-lg p-4 mb-4">
+                                <p className="text-white/90 font-semibold mb-2">Current Endorsements ({endorsementCount.total}):</p>
+                                <div className="space-y-1">
+                                    {Object.entries(endorsementCount.bySkill).map(([skill, count]) => {
+                                        const skillLabel = SKILL_OPTIONS.find(s => s.value === skill)?.label || skill;
+                                        return (
+                                            <div key={skill} className="flex justify-between text-white/80 text-sm">
+                                                <span>{skillLabel}</span>
+                                                <span className="font-semibold">{count}</span>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
                         )}
                         <p className="text-white/90 text-lg mb-8">
                             Select their superpower:
