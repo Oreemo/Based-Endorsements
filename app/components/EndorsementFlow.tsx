@@ -158,16 +158,6 @@ export default function EndorsementFlow() {
                 to: EAS_CONTRACT_ADDRESS,
                 data,
                 value: BigInt(0),
-            }, {
-                onSuccess: (hash) => {
-                    console.log("Transaction sent:", hash);
-                    setTxHash(hash);
-                },
-                onError: (err) => {
-                    console.error("Send transaction error:", err);
-                    setError(err.message);
-                    setLoading(false);
-                }
             });
 
         } catch (err: any) {
