@@ -4,6 +4,7 @@ import { createConfig, http, WagmiProvider } from "wagmi";
 import { base } from "wagmi/chains";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { farcasterFrame } from "@farcaster/frame-wagmi-connector";
+import { coinbaseWallet, injected } from "wagmi/connectors";
 import { type ReactNode, useState } from "react";
 
 export const config = createConfig({
@@ -11,7 +12,11 @@ export const config = createConfig({
     transports: {
         [base.id]: http(),
     },
-    connectors: [farcasterFrame()],
+    connectors: [
+        farcasterFrame(),
+        injected(),
+        coinbaseWallet({ appName: 'Based Endorsements' }),
+    ],
 });
 
 export default function Provider({ children }: { children: ReactNode }) {

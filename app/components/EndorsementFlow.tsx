@@ -117,11 +117,23 @@ export default function EndorsementFlow() {
             if (!isConnected) {
                 console.log("Not connected, attempting to connect...");
                 try {
-                    // Try to connect with any available connector (better for mobile)
-                    if (config.connectors.length > 0) {
-                        connect({ connector: config.connectors[0] });
-                    } else {
-                        setError("No wallet connector available. Please refresh the page.");
+                    // Try to connect with available connectors in order
+                    const connectors = config.connectors;
+                    let connected = false;
+
+                    for (const connector of connectors) {
+                        try {
+                            console.log(`Attempting connection with ${connector.name}`);
+                            await connect({ connector });
+                            connected = true;
+                            break;
+                        } catch (e) {
+                            console.warn(`Failed to connect with ${connector.name}:`, e);
+                        }
+                    }
+
+                    if (!connected) {
+                        setError("Could not connect to any wallet. Please open in a wallet app or Farcaster.");
                     }
                 } catch (connectError: any) {
                     console.error("Connection error:", connectError);
