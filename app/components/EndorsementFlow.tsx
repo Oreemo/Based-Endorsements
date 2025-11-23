@@ -147,7 +147,6 @@ export default function EndorsementFlow() {
                 to: EAS_CONTRACT_ADDRESS,
                 data,
                 value: BigInt(0),
-                gas: BigInt(500000),
             }, {
                 onSuccess: (hash) => {
                     console.log("Transaction sent:", hash);
