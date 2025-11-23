@@ -3,9 +3,9 @@
 import { useState, useEffect } from "react";
 import { resolveBasename } from "@/lib/basename";
 import { buildAttestationRequest, EAS_ABI, EAS_CONTRACT_ADDRESS } from "@/lib/eas";
-import { SKILL_OPTIONS, type SkillType } from "@/lib/constants";
+import { SKILL_OPTIONS, type SkillType, ENDORSEMENT_SCHEMA_UID } from "@/lib/constants";
 import { base } from "viem/chains";
-import { encodeFunctionData } from "viem";
+import { encodeFunctionData, createPublicClient, http } from "viem";
 import { useAccount, useConnect, useSendTransaction, useWaitForTransactionReceipt } from "wagmi";
 import { config } from "./providers/WagmiProvider";
 
@@ -19,23 +19,34 @@ export default function EndorsementFlow() {
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
     const [txHash, setTxHash] = useState<string>("");
+    const [attestationUID, setAttestationUID] = useState<string>("");
+    const [endorsementCount, setEndorsementCount] = useState<number | null>(null);
 
     // Wagmi Hooks
     const { isConnected } = useAccount();
     const { connect } = useConnect();
     const { sendTransaction, isPending: isTxPending, error: txError } = useSendTransaction();
 
-    const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({
+    const { isLoading: isConfirming, isSuccess: isConfirmed, data: receipt } = useWaitForTransactionReceipt({
         hash: txHash as `0x${string}`,
     });
 
     // Effect to handle transaction success/error
     useEffect(() => {
-        if (isConfirmed) {
+        if (isConfirmed && receipt) {
+            // Extract attestation UID from logs
+            // The Attested event is emitted with the UID as the first indexed parameter
+            if (receipt.logs && receipt.logs.length > 0) {
+                const attestedLog = receipt.logs[0];
+                if (attestedLog.topics && attestedLog.topics.length >= 3) {
+                    const uid = attestedLog.topics[2]; // The UID is in topics[2]
+                    setAttestationUID(uid);
+                }
+            }
             setStep("success");
             setLoading(false);
         }
-    }, [isConfirmed]);
+    }, [isConfirmed, receipt]);
 
     useEffect(() => {
         if (txError) {
@@ -44,6 +55,32 @@ export default function EndorsementFlow() {
             setLoading(false);
         }
     }, [txError]);
+
+    // Fetch endorsement count when address is resolved
+    useEffect(() => {
+        if (address && step === "select-skill") {
+            fetchEndorsementCount(address);
+        }
+    }, [address, step]);
+
+    const fetchEndorsementCount = async (targetAddress: string) => {
+        try {
+            const client = createPublicClient({
+                chain: base,
+                transport: http(),
+            });
+
+            // Query EAS GraphQL API or contract directly
+            // For now, using a placeholder - you'd implement GraphQL query here
+            // This would query: query { attestations(where: { schema: $schemaUID, recipient: $address }) { aggregate { count } } }
+            console.log("Fetching endorsement count for:", targetAddress);
+            // Placeholder - implement actual GraphQL query
+            setEndorsementCount(0);
+        } catch (err) {
+            console.error("Error fetching endorsement count", err);
+            setEndorsementCount(null);
+        }
+    };
 
     const handleBasenameSubmit = async () => {
         if (!basename.trim()) {
@@ -174,6 +211,11 @@ export default function EndorsementFlow() {
                         <h2 className="text-3xl font-bold text-white mb-2">
                             Endorsing: {basename}
                         </h2>
+                        {endorsementCount !== null && (
+                            <p className="text-white/80 text-sm">
+                                This builder has {endorsementCount} endorsement{endorsementCount !== 1 ? 's' : ''}
+                            </p>
+                        )}
                         <p className="text-white/90 text-lg mb-8">
                             Select their superpower:
                         </p>
@@ -275,14 +317,16 @@ export default function EndorsementFlow() {
                                     setSkill("");
                                     setError("");
                                     setTxHash("");
+                                    setAttestationUID("");
+                                    setEndorsementCount(null);
                                 }}
                                 className="w-full bg-white text-blue-600 py-4 rounded-lg font-bold text-xl hover:bg-white/90 transition"
                             >
                                 Endorse Another Builder
                             </button>
-                            {txHash && (
+                            {attestationUID && (
                                 <a
-                                    href={`https://base.easscan.org/tx/${txHash}`}
+                                    href={`https://base.easscan.org/attestation/view/${attestationUID}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="block w-full bg-white/10 text-white py-3 rounded-lg font-semibold text-lg hover:bg-white/20 transition"
