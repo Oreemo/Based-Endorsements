@@ -1,18 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getAddress } from '@coinbase/onchainkit/identity';
-import { base } from 'viem/chains';
-import { createPublicClient, http, namehash, parseAbi } from 'viem';
+import { createPublicClient, http } from 'viem';
+import { mainnet } from 'viem/chains';
 
 export const dynamic = 'force-dynamic';
 
-// Create a public client with a reliable RPC
-const publicClient = createPublicClient({
-    chain: base,
-    transport: http(process.env.NEXT_PUBLIC_BASE_RPC_URL || 'https://base.llamarpc.com'),
+// Create a client on Ethereum Mainnet for ENS resolution
+// Basenames use CCIP-Read, so we need to resolve through L1
+const mainnetClient = createPublicClient({
+    chain: mainnet,
+    transport: http('https://eth.llamarpc.com'),
 });
-
-const BASENAME_L2_RESOLVER_ADDRESS = '0xC6d566A56A1aFf6508b41f6c90ff131615583BCD'; // L2 Resolver
-const BASE_REGISTRY_ADDRESS = '0x1493b2567056c2181630115660963E13A8E32735'; // Base ENS Registry
 
 export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
@@ -35,107 +32,27 @@ export async function GET(request: NextRequest) {
     };
 
     try {
-        // Method 0: Base Registry -> Resolver -> Address (Proper ENS flow)
-        addLog('Attempting Method 0: Base Registry Resolution');
-        try {
-            const node = namehash(fullName);
-            addLog(`Namehash: ${node}`);
+        // Use Ethereum Mainnet's ENS Universal Resolver with CCIP-Read support
+        // This will properly handle Basenames which use wildcard resolution + CCIP-Read
+        addLog('Attempting resolution via Ethereum Mainnet ENS (CCIP-Read)');
 
-            // Step 1: Query Base Registry for Resolver
-            const resolverAddress = await publicClient.readContract({
-                address: BASE_REGISTRY_ADDRESS,
-                abi: parseAbi(['function resolver(bytes32 node) view returns (address)']),
-                functionName: 'resolver',
-                args: [node],
-            });
-            addLog(`Resolver from Registry: ${resolverAddress}`);
+        const address = await mainnetClient.getEnsAddress({
+            name: fullName,
+        });
 
-            if (resolverAddress && resolverAddress !== '0x0000000000000000000000000000000000000000') {
-                // Step 2: Query that Resolver for Address
-                const address = await publicClient.readContract({
-                    address: resolverAddress as `0x${string}`,
-                    abi: parseAbi(['function addr(bytes32 node) view returns (address)']),
-                    functionName: 'addr',
-                    args: [node],
-                });
-
-                if (address && address !== '0x0000000000000000000000000000000000000000') {
-                    addLog(`Method 0 success: ${address}`);
-                    return NextResponse.json({ address, method: 'base-registry' });
-                }
-                addLog(`Method 0: Resolver returned zero address`);
-            } else {
-                addLog('Method 0: No resolver set in registry');
-            }
-        } catch (e: any) {
-            addLog(`Method 0 failed: ${e.message}`);
+        if (address) {
+            addLog(`Successfully resolved via CCIP-Read: ${address}`);
+            return NextResponse.json({ address, method: 'mainnet-ens-ccip' });
         }
 
-        // Method 1: OnchainKit
-        addLog('Attempting Method 1: OnchainKit');
-        try {
-            const address = await getAddress({ name: fullName, chain: base as any });
-            if (address) {
-                addLog(`Method 1 success: ${address}`);
-                return NextResponse.json({ address, method: 'onchainkit' });
-            }
-            addLog('Method 1 returned null');
-        } catch (e: any) {
-            addLog(`Method 1 failed: ${e.message}`);
-        }
-
-        // Method 2: Direct L2 Resolver Call
-        addLog('Attempting Method 2: Direct L2 Resolver Call');
-        try {
-            const node = namehash(fullName);
-            const address = await publicClient.readContract({
-                address: BASENAME_L2_RESOLVER_ADDRESS,
-                abi: parseAbi(['function addr(bytes32 node) view returns (address)']),
-                functionName: 'addr',
-                args: [node],
-            });
-
-            if (address && address !== '0x0000000000000000000000000000000000000000') {
-                addLog(`Method 2 success: ${address}`);
-                return NextResponse.json({ address, method: 'direct-resolver' });
-            }
-            addLog(`Method 2 returned zero address or null: ${address}`);
-        } catch (e: any) {
-            addLog(`Method 2 failed: ${e.message}`);
-        }
-
-        // Method 3: Viem getEnsAddress (Standard) - Try with and without .base.eth suffix
-        addLog('Attempting Method 3: Viem getEnsAddress');
-        try {
-            // First try with the full name
-            let address = await publicClient.getEnsAddress({
-                name: fullName,
-            });
-
-            // If that fails and the name already has .base.eth, try without it
-            if (!address && fullName.includes('.base.eth') && fullName.split('.').length > 3) {
-                const nameWithoutBaseSuffix = fullName.replace('.base.eth', '.eth');
-                addLog(`Method 3 trying alternate format: ${nameWithoutBaseSuffix}`);
-                address = await publicClient.getEnsAddress({
-                    name: nameWithoutBaseSuffix,
-                });
-            }
-
-            if (address) {
-                addLog(`Method 3 success: ${address}`);
-                return NextResponse.json({ address, method: 'viem-ens' });
-            }
-            addLog('Method 3 returned null');
-        } catch (e: any) {
-            addLog(`Method 3 failed: ${e.message}`);
-        }
-
+        addLog('Resolution returned null');
         return NextResponse.json({
             error: 'Address not found',
             logs
         }, { status: 404 });
 
     } catch (error: any) {
+        addLog(`Error: ${error.message}`);
         console.error('[API] Critical error resolving basename:', error);
         return NextResponse.json({
             error: 'Internal server error',
