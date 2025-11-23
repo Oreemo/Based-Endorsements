@@ -12,6 +12,7 @@ const publicClient = createPublicClient({
 });
 
 const BASENAME_L2_RESOLVER_ADDRESS = '0xC6d566A56A1aFf6508b41f6c90ff131615583BCD'; // L2 Resolver
+const BASE_REGISTRY_ADDRESS = '0x1493b2567056c2181630115660963E13A8E32735'; // Base ENS Registry
 
 export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
@@ -34,6 +35,42 @@ export async function GET(request: NextRequest) {
     };
 
     try {
+        // Method 0: Base Registry -> Resolver -> Address (Proper ENS flow)
+        addLog('Attempting Method 0: Base Registry Resolution');
+        try {
+            const node = namehash(fullName);
+            addLog(`Namehash: ${node}`);
+
+            // Step 1: Query Base Registry for Resolver
+            const resolverAddress = await publicClient.readContract({
+                address: BASE_REGISTRY_ADDRESS,
+                abi: parseAbi(['function resolver(bytes32 node) view returns (address)']),
+                functionName: 'resolver',
+                args: [node],
+            });
+            addLog(`Resolver from Registry: ${resolverAddress}`);
+
+            if (resolverAddress && resolverAddress !== '0x0000000000000000000000000000000000000000') {
+                // Step 2: Query that Resolver for Address
+                const address = await publicClient.readContract({
+                    address: resolverAddress as `0x${string}`,
+                    abi: parseAbi(['function addr(bytes32 node) view returns (address)']),
+                    functionName: 'addr',
+                    args: [node],
+                });
+
+                if (address && address !== '0x0000000000000000000000000000000000000000') {
+                    addLog(`Method 0 success: ${address}`);
+                    return NextResponse.json({ address, method: 'base-registry' });
+                }
+                addLog(`Method 0: Resolver returned zero address`);
+            } else {
+                addLog('Method 0: No resolver set in registry');
+            }
+        } catch (e: any) {
+            addLog(`Method 0 failed: ${e.message}`);
+        }
+
         // Method 1: OnchainKit
         addLog('Attempting Method 1: OnchainKit');
         try {
