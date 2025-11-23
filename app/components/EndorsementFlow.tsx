@@ -25,7 +25,7 @@ export default function EndorsementFlow() {
     // Wagmi Hooks
     const { isConnected } = useAccount();
     const { connect } = useConnect();
-    const { sendTransaction, isPending: isTxPending, error: txError } = useSendTransaction();
+    const { sendTransaction, data: txData, isPending: isTxPending, error: txError } = useSendTransaction();
 
     const { isLoading: isConfirming, isSuccess: isConfirmed, data: receipt } = useWaitForTransactionReceipt({
         hash: txHash as `0x${string}`,
@@ -57,6 +57,14 @@ export default function EndorsementFlow() {
             setLoading(false);
         }
     }, [txError]);
+
+    // Effect to capture transaction hash from sendTransaction
+    useEffect(() => {
+        if (txData) {
+            console.log("Transaction sent:", txData);
+            setTxHash(txData);
+        }
+    }, [txData]);
 
     // Fetch endorsement count when address is resolved
     useEffect(() => {
