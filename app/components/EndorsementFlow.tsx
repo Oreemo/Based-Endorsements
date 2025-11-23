@@ -23,7 +23,7 @@ export default function EndorsementFlow() {
     const [endorsementCount, setEndorsementCount] = useState<{ total: number; bySkill: Record<string, number> } | null>(null);
 
     // Wagmi Hooks
-    const { isConnected } = useAccount();
+    const { isConnected, address: userAddress } = useAccount();
     const { connect } = useConnect();
     const { sendTransaction, data: txData, isPending: isTxPending, error: txError } = useSendTransaction();
 
@@ -112,6 +112,14 @@ export default function EndorsementFlow() {
             }
 
             setAddress(resolvedAddress);
+
+            // Check if user is trying to endorse themselves
+            if (userAddress && resolvedAddress.toLowerCase() === userAddress.toLowerCase()) {
+                setError("You cannot endorse yourself. Please enter someone else's basename.");
+                setLoading(false);
+                return;
+            }
+
             setStep("select-skill");
         } catch (err) {
             setError("Error resolving basename");
@@ -135,7 +143,17 @@ export default function EndorsementFlow() {
             // Ensure connected
             if (!isConnected) {
                 console.log("Not connected, attempting to connect...");
-                connect({ connector: config.connectors[0] });
+                try {
+                    // Try to connect with any available connector (better for mobile)
+                    if (config.connectors.length > 0) {
+                        connect({ connector: config.connectors[0] });
+                    } else {
+                        setError("No wallet connector available. Please refresh the page.");
+                    }
+                } catch (connectError: any) {
+                    console.error("Connection error:", connectError);
+                    setError(`Failed to connect wallet: ${connectError.message}`);
+                }
                 setLoading(false);
                 return;
             }

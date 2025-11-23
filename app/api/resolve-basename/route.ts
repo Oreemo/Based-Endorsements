@@ -67,12 +67,23 @@ export async function GET(request: NextRequest) {
             addLog(`Method 2 failed: ${e.message}`);
         }
 
-        // Method 3: Viem getEnsAddress (Standard)
+        // Method 3: Viem getEnsAddress (Standard) - Try with and without .base.eth suffix
         addLog('Attempting Method 3: Viem getEnsAddress');
         try {
-            const address = await publicClient.getEnsAddress({
+            // First try with the full name
+            let address = await publicClient.getEnsAddress({
                 name: fullName,
             });
+
+            // If that fails and the name already has .base.eth, try without it
+            if (!address && fullName.includes('.base.eth') && fullName.split('.').length > 3) {
+                const nameWithoutBaseSuffix = fullName.replace('.base.eth', '.eth');
+                addLog(`Method 3 trying alternate format: ${nameWithoutBaseSuffix}`);
+                address = await publicClient.getEnsAddress({
+                    name: nameWithoutBaseSuffix,
+                });
+            }
+
             if (address) {
                 addLog(`Method 3 success: ${address}`);
                 return NextResponse.json({ address, method: 'viem-ens' });
