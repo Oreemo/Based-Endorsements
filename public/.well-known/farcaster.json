@@ -3,5 +3,16 @@
         "header": "eyJmaWQiOjE0NDQ3NzQsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHhGODVDMzEzMTY4NjJmOGU0YjM4N0U3NTViY0ZkYTA2MDMzRDIzOTAwIn0",
         "payload": "eyJkb21haW4iOiJvcmVlbW8ueHl6In0",
         "signature": "HaAbBRCnc4gkkin7B86mCe/6X8NIafoQuPrWwj28EEA5UrL4LEp9rOJyzDC9feuNK1kv/JO23zyr8tH6xCJRvhs="
+    },
+    "frame": {
+        "version": "1",
+        "name": "Base Endorsement",
+        "iconUrl": "https://oreemo.xyz/icon.png",
+        "homeUrl": "https://oreemo.xyz",
+        "imageUrl": "https://oreemo.xyz/icon.png",
+        "buttonTitle": "Endorse",
+        "splashImageUrl": "https://oreemo.xyz/icon.png",
+        "splashBackgroundColor": "#0052FF",
+        "webhookUrl": "https://oreemo.xyz/api/webhook"
     }
 }
