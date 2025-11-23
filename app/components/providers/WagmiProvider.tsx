@@ -3,7 +3,7 @@
 import { createConfig, http, WagmiProvider } from "wagmi";
 import { base } from "wagmi/chains";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { frameConnector } from "@farcaster/frame-wagmi-connector";
+import { farcasterFrame } from "@farcaster/frame-wagmi-connector";
 import { type ReactNode, useState } from "react";
 
 export const config = createConfig({
@@ -11,7 +11,7 @@ export const config = createConfig({
     transports: {
         [base.id]: http(),
     },
-    connectors: [frameConnector()],
+    connectors: [farcasterFrame()],
 });
 
 export default function Provider({ children }: { children: ReactNode }) {
