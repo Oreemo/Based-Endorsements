@@ -99,33 +99,6 @@ export default function EndorsementFlow() {
             setError("Please enter a basename");
             return;
         }
-
-        setLoading(true);
-        setError("");
-
-        try {
-            const resolvedAddress = await resolveBasename(basename);
-            if (!resolvedAddress) {
-                setError(`Could not resolve: ${basename}. Check spelling or try another.`);
-                setLoading(false);
-                return;
-            }
-
-            setAddress(resolvedAddress);
-
-            // Check if user is trying to endorse themselves
-            if (userAddress && resolvedAddress.toLowerCase() === userAddress.toLowerCase()) {
-                setError("You cannot endorse yourself. Please enter someone else's basename.");
-                setLoading(false);
-                return;
-            }
-
-            setStep("select-skill");
-        } catch (err) {
-            setError("Error resolving basename");
-        } finally {
-            setLoading(false);
-        }
     };
 
     const handleSkillSelect = (selectedSkill: SkillType) => {
