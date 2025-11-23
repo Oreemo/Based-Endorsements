@@ -5,7 +5,7 @@ import { resolveBasename } from "@/lib/basename";
 import { buildAttestationRequest, EAS_ABI, EAS_CONTRACT_ADDRESS } from "@/lib/eas";
 import { SKILL_OPTIONS, type SkillType, ENDORSEMENT_SCHEMA_UID } from "@/lib/constants";
 import { base } from "viem/chains";
-import { encodeFunctionData, createPublicClient, http } from "viem";
+import { encodeFunctionData } from "viem";
 import { useAccount, useConnect, useSendTransaction, useWaitForTransactionReceipt } from "wagmi";
 import { config } from "./providers/WagmiProvider";
 
@@ -65,19 +65,18 @@ export default function EndorsementFlow() {
 
     const fetchEndorsementCount = async (targetAddress: string) => {
         try {
-            const client = createPublicClient({
-                chain: base,
-                transport: http(),
-            });
+            const response = await fetch(`/api/get-endorsement-count?address=${targetAddress}`);
 
-            // Query EAS GraphQL API or contract directly
-            // For now, using a placeholder - you'd implement GraphQL query here
-            // This would query: query { attestations(where: { schema: $schemaUID, recipient: $address }) { aggregate { count } } }
-            console.log("Fetching endorsement count for:", targetAddress);
-            // Placeholder - implement actual GraphQL query
-            setEndorsementCount(0);
+            if (!response.ok) {
+                console.error("Failed to fetch endorsement count");
+                setEndorsementCount(null);
+                return;
+            }
+
+            const data = await response.json();
+            setEndorsementCount(data.count || 0);
         } catch (err) {
-            console.error("Error fetching endorsement count", err);
+            console.error("Error fetching endorsement count:", err);
             setEndorsementCount(null);
         }
     };
