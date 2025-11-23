@@ -35,12 +35,15 @@ export default function EndorsementFlow() {
     useEffect(() => {
         if (isConfirmed && receipt) {
             // Extract attestation UID from logs
-            // The Attested event is emitted with the UID as the first indexed parameter
+            // The Attested event: event Attested(address indexed recipient, address indexed attester, bytes32 uid, bytes32 indexed schemaId)
+            // UID is NOT indexed, so it's in the data field, not topics
             if (receipt.logs && receipt.logs.length > 0) {
                 const attestedLog = receipt.logs[0];
-                if (attestedLog.topics && attestedLog.topics.length >= 3) {
-                    const uid = attestedLog.topics[2]; // The UID is in topics[2]
-                    if (uid) {
+                if (attestedLog.data) {
+                    // Decode the data field which contains the UID (bytes32)
+                    // Since UID is the only non-indexed parameter, it's directly in data
+                    const uid = attestedLog.data as `0x${string}`;
+                    if (uid && uid !== '0x') {
                         setAttestationUID(uid);
                     }
                 }
