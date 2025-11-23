@@ -147,7 +147,6 @@ export default function EndorsementFlow() {
                 to: EAS_CONTRACT_ADDRESS,
                 data,
                 value: BigInt(0),
-                chainId: base.id,
                 gas: BigInt(500000),
             }, {
                 onSuccess: (hash) => {
