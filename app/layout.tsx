@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { GeistSans } from "geist/font/sans";
-import { GeistMono } from "geist/font/mono";
 import Provider from "./components/providers/WagmiProvider";
-import MiniAppProvider from "./components/providers/MiniAppProvider";
+import MiniAppProvider from "./components/MiniAppProvider";
 
 export async function generateMetadata(): Promise<Metadata> {
     return {
@@ -23,9 +21,7 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en">
-            <body
-                className={`${GeistSans.variable} ${GeistMono.variable} antialiased`}
-            >
+            <body>
                 <Provider>
                     <MiniAppProvider>
                         {children}
