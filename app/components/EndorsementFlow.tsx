@@ -40,7 +40,9 @@ export default function EndorsementFlow() {
                 const attestedLog = receipt.logs[0];
                 if (attestedLog.topics && attestedLog.topics.length >= 3) {
                     const uid = attestedLog.topics[2]; // The UID is in topics[2]
-                    setAttestationUID(uid);
+                    if (uid) {
+                        setAttestationUID(uid);
+                    }
                 }
             }
             setStep("success");
